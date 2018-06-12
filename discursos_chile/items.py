@@ -8,3 +8,10 @@ class SenatorItem(scrapy.Item):
     phone = scrapy.Field()
     email = scrapy.Field()
     region = scrapy.Field()
+
+
+class InterventionItem(scrapy.Item):
+    senator_id = scrapy.Field()
+    text = scrapy.Field()
+    date = scrapy.Field()
+    speech = scrapy.Field()

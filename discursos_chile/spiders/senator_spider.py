@@ -1,8 +1,8 @@
 import scrapy
 from scrapy.selector import Selector
-from discursos_chile.items import SenatorItem
-from datetime import date
-import intervention_spider
+from discursos_chile.items import SenatorItem, InterventionItem
+from html2text import html2text
+from datetime import datetime
 
 
 class SenatorSpider(scrapy.Spider):
@@ -31,10 +31,10 @@ class SenatorSpider(scrapy.Spider):
 
         yield item
 
-        for year in range(2004, date.today().year + 1):
+        for year in range(2004, datetime.now().year + 1):
             yield scrapy.FormRequest(
                 'http://www.senado.cl/appsenado/index.php',
-                intervention_spider.InterventionSpider().parse_intervention_list,
+                self.parse_intervention_list,
 
                 formdata=dict(
                     mo='senadores',
@@ -42,5 +42,23 @@ class SenatorSpider(scrapy.Spider):
                     parlamentario=item['senator_id'],
                     ano=str(year),
                 ),
-
+                method='GET',
+                meta={'senator_id': item['senator_id']}
             )
+
+    def parse_intervention_list(self, response):
+        for intervencion in response.xpath('//a[contains(text(),"Intervenci")]'):
+            url = intervencion.xpath('@href').extract_first()
+            date = intervencion.xpath('../../td[2]/text()').extract_first()
+            response.meta['date'] = datetime.strptime(date, '%Y-%m-%d').date()
+            yield scrapy.Request(response.urljoin(url), self.parse_intervention, meta=response.meta)
+
+    def parse_intervention(self, response):
+        speech = html2text(response.xpath('//article/div').extract_first()).split('.- ')[1:]
+        speech = ' '.join(speech)
+        intervention = InterventionItem()
+        intervention['senator_id'] = response.meta['senator_id']
+        intervention['speech'] = speech.replace('\n', ' ')
+        intervention['date'] = response.meta['date']
+
+        yield intervention
