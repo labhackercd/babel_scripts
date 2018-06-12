@@ -18,6 +18,7 @@ class SenatorSpider(scrapy.Spider):
 
     def parse_senators(self, response):
         item = SenatorItem()
+        item['url'] = response.request.url
         item['senator_id'] = response.xpath('//*[@id="parlid"]/@value').extract_first()
         item['name'] = response.xpath('//div[@class="datos"]/../h1/text()').extract_first()
         item['party'] = response.xpath(
@@ -50,7 +51,7 @@ class SenatorSpider(scrapy.Spider):
         for intervencion in response.xpath('//a[contains(text(),"Intervenci")]'):
             url = intervencion.xpath('@href').extract_first()
             date = intervencion.xpath('../../td[2]/text()').extract_first()
-            response.meta['date'] = datetime.strptime(date, '%Y-%m-%d').date()
+            response.meta['date'] = date + 'T00:00'
             yield scrapy.Request(response.urljoin(url), self.parse_intervention, meta=response.meta)
 
     def parse_intervention(self, response):
@@ -60,5 +61,6 @@ class SenatorSpider(scrapy.Spider):
         intervention['senator_id'] = response.meta['senator_id']
         intervention['speech'] = speech.replace('\n', ' ')
         intervention['date'] = response.meta['date']
+        intervention['url'] = response.request.url
 
         yield intervention
