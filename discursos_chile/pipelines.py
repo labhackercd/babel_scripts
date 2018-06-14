@@ -13,6 +13,7 @@ CHANNEL_ID = config('CHANNEL_ID',
                     default=5)
 MANIFESTATION_TYPE_ID = config('MANIFESTATION_TYPE_ID', default=3)
 COLLECT_ID = config('COLLECT_ID', default=3)
+AUTH_TOKEN = config('AUTH_TOKEN', default='')
 
 
 class DiscursosChilePipeline(object):
@@ -25,7 +26,10 @@ class DiscursosChilePipeline(object):
                 'author_type': 'Senador CL',
             }
             author = requests.post(BABEL_API_URL + 'authors/',
-                                   json=author_data).json()
+                                   json=author_data,
+                                   headers={
+                                       'Authorization': 'Token %s' % AUTH_TOKEN
+                                   }).json()
 
             profile_data = {
                 'channel_id': CHANNEL_ID,
@@ -42,7 +46,10 @@ class DiscursosChilePipeline(object):
                 ]
             }
             profile = requests.post(BABEL_API_URL + 'profiles/',
-                                    json=profile_data).json()
+                                    json=profile_data,
+                                    headers={
+                                        'Authorization': 'Token %s' % AUTH_TOKEN
+                                    }).json()
             self.profiles[item['senator_id']] = profile['id']
 
         if isinstance(item, InterventionItem):
@@ -57,6 +64,7 @@ class DiscursosChilePipeline(object):
                 'attrs': [],
             }
             requests.post(BABEL_API_URL + 'manifestations/',
-                          json=intervention_data)
+                          json=intervention_data,
+                          headers={'Authorization': 'Token %s' % AUTH_TOKEN})
 
         return item
