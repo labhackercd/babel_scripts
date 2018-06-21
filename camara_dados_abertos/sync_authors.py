@@ -4,10 +4,8 @@ from decouple import config
 import json
 import requests
 
-BABEL_API_URL = config('BABEL_API_URL',
-                       default='http://localhost:8000/api/v1/')
-CHANNEL_ID = config('CHANNEL_ID',
-                    default=2)
+BABEL_API_URL = config('BABEL_API_URL', default='http://localhost:8000/api/v1/')
+CHANNEL_ID = config('CHANNEL_ID', default='')
 AUTH_TOKEN = config('AUTH_TOKEN', default='')
 
 # CEP base para representar os estados no cadastro dos deputados no Babel
