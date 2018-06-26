@@ -9,6 +9,7 @@ ipdb = "*"
 "html2text" = "*"
 python-decouple = "*"
 requests = "*"
+tweepy = "*"
 
 [dev-packages]
 

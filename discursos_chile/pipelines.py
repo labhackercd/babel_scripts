@@ -25,7 +25,7 @@ class DiscursosChilePipeline(object):
                 'name': item['name'],
                 'author_type': 'Senador CL',
             }
-            author = requests.post(BABEL_API_URL + 'authors/',
+            author = requests.post(BABEL_API_URL + 'authors',
                                    json=author_data,
                                    headers={
                                        'Authorization': 'Token %s' % AUTH_TOKEN
@@ -45,7 +45,7 @@ class DiscursosChilePipeline(object):
                     {'field': 'region', 'value': item['region']},
                 ]
             }
-            profile = requests.post(BABEL_API_URL + 'profiles/',
+            profile = requests.post(BABEL_API_URL + 'profiles',
                                     json=profile_data,
                                     headers={
                                         'Authorization': 'Token %s' % AUTH_TOKEN
@@ -63,7 +63,7 @@ class DiscursosChilePipeline(object):
                 'url': item['url'],
                 'attrs': [],
             }
-            requests.post(BABEL_API_URL + 'manifestations/',
+            requests.post(BABEL_API_URL + 'manifestations',
                           json=intervention_data,
                           headers={'Authorization': 'Token %s' % AUTH_TOKEN})
 
