@@ -13,12 +13,11 @@ QUESTION_TYPE_ID = config('QUESTION_TYPE_ID', default='')
 def api_get_objects(url):
     data = requests.get(url).json()
     objects = data['results']
-    next_url = data['next']
 
-    while(next_url):
-        data = requests.get(next_url).json()
+    while(data['next']):
+        data = requests.get(data['next']).json()
         objects += data['results']
-        print(next_url)
+        print(data['next'])
 
     return objects
 
