@@ -29,7 +29,7 @@ def send_profile(author):
     profile_data = {
         'channel_id': CHANNEL_ID,
         'url': EDEMOCRACIA_URL + author['resource_uri'],
-        'id_in_channel': author['id'],
+        'id_in_channel': 'wikilegis-' + str(author['id']),
         'is_reference': 'false',
         'attrs': [
             {'field': 'first_name',
@@ -77,7 +77,7 @@ def get_comments():
                 'manifestation_type_id': COMMENT_TYPE_ID,
                 'profile_id': profile.json()['id'],
                 'url': EDEMOCRACIA_URL + comment['resource_uri'],
-                'id_in_channel': comment['id'],
+                'id_in_channel': 'wikilegis-comment-' + str(comment['id']),
                 'content': comment['text'],
                 'timestamp': comment['created'],
                 'attrs': [
@@ -107,7 +107,7 @@ def get_votes():
                 'manifestation_type_id': VOTE_TYPE_ID,
                 'profile_id': profile.json()['id'],
                 'url': EDEMOCRACIA_URL + vote['resource_uri'],
-                'id_in_channel': vote['id'],
+                'id_in_channel': 'wikilegis-vote-' + str(vote['id']),
                 'content': str(vote['vote']),
                 'timestamp': vote['created'],
                 'attrs': [
@@ -156,7 +156,7 @@ def get_amendments():
                     'manifestation_type_id': AMENDMENT_TYPE_ID,
                     'profile_id': profile.json()['id'],
                     'url': EDEMOCRACIA_URL + amendment['resource_uri'],
-                    'id_in_channel': amendment['id'],
+                    'id_in_channel': 'wikilegis-' + object_type + '-' + str(amendment['id']),
                     'content': amendment['content'],
                     'timestamp': amendment['created'],
                     'attrs': [
