@@ -1,6 +1,6 @@
 from decouple import config
 import requests
-# import sys
+import sys
 
 
 BABEL_API_URL = config('BABEL_API_URL', default='http://localhost:8000/api/v1/')
@@ -8,6 +8,7 @@ EDEMOCRACIA_URL = config('EDEMOCRACIA_URL', default='https://edemocracia.camara.
 AUTH_TOKEN = config('AUTH_TOKEN', default='')
 CHANNEL_ID = config('CHANNEL_ID', default='')
 QUESTION_TYPE_ID = config('QUESTION_TYPE_ID', default='')
+MESSAGE_TYPE_ID = config('MESSAGE_TYPE_ID', default='')
 
 
 def api_get_objects(url):
@@ -92,8 +93,40 @@ def get_questions():
                 print("Error: %s" % r_question.content)
 
 
+def get_messages():
+    url = EDEMOCRACIA_URL + '/audiencias/api/message/'
+    messages = api_get_objects(url)
+
+    for message in messages:
+        profile = send_profile(message['user'])
+
+        if profile.status_code == 201:
+            message_data = {
+                'manifestation_type_id': MESSAGE_TYPE_ID,
+                'profile_id': profile.json()['id'],
+                'url': url + str(message['id']),
+                'id_in_channel': 'audiencias-message-' + str(message['id']),
+                'content': message['message'],
+                'timestamp': message['created'],
+                'attrs': [
+                    {'field': 'modified', 'value': message['modified']},
+                    {'field': 'room', 'value': str(message['room'])},
+                ]
+            }
+
+            r_message = send_manifestation(message_data)
+
+            if r_message.status_code == 201:
+                print("Message '%s' created" % message['id'])
+            else:
+                print("Error: %s" % r_message.content)
+
+
 if __name__ == '__main__':
-    # if 'questions' in sys.argv:
-    #     get_questions()
-    # else:
-    get_questions()
+    if 'questions' in sys.argv:
+        get_questions()
+    elif 'messages' in sys.argv:
+        get_messages()
+    else:
+        get_questions()
+        get_messages()
