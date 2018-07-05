@@ -1,4 +1,5 @@
 from decouple import config
+from datetime import datetime, timedelta
 import requests
 import sys
 
@@ -64,7 +65,14 @@ def send_manifestation(data):
 
 
 def get_questions():
-    url = EDEMOCRACIA_URL + '/audiencias/api/question/'
+    if sys.argv[-1].isdigit():
+        today = datetime.today()
+        since = today - timedelta(days=int(sys.argv[-1]))
+        params = '?modified__gte=%s' % since.strftime('%Y-%m-%d')
+        url = EDEMOCRACIA_URL + '/audiencias/api/question/' + params
+    else:
+        url = EDEMOCRACIA_URL + '/audiencias/api/question/'
+
     questions = api_get_objects(url)
 
     for question in questions:
@@ -94,7 +102,14 @@ def get_questions():
 
 
 def get_messages():
-    url = EDEMOCRACIA_URL + '/audiencias/api/message/'
+    if sys.argv[-1].isdigit():
+        today = datetime.today()
+        since = today - timedelta(days=int(sys.argv[-1]))
+        params = '?modified__gte=%s' % since.strftime('%Y-%m-%d')
+        url = EDEMOCRACIA_URL + '/audiencias/api/message/' + params
+    else:
+        url = EDEMOCRACIA_URL + '/audiencias/api/message/'
+
     messages = api_get_objects(url)
 
     for message in messages:
