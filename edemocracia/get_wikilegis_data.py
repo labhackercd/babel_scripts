@@ -20,6 +20,7 @@ def api_get_objects(url):
     while(next_url):
         data = requests.get(EDEMOCRACIA_URL + next_url).json()
         objects += data['objects']
+        next_url = data['meta']['next']
         print(next_url)
 
     return objects
