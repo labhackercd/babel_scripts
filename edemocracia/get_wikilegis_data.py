@@ -1,4 +1,5 @@
 from decouple import config
+from datetime import datetime, timedelta
 import requests
 import sys
 
@@ -67,7 +68,14 @@ def send_manifestation(data):
 
 
 def get_comments():
-    url = EDEMOCRACIA_URL + '/wikilegis/api/v1/comment/'
+    if sys.argv[-1].isdigit():
+        today = datetime.today()
+        since = today - timedelta(days=int(sys.argv[-1]))
+        params = '?modified__gte=%s' % since.strftime('%Y-%m-%d')
+        url = EDEMOCRACIA_URL + '/wikilegis/api/v1/comment/' + params
+    else:
+        url = EDEMOCRACIA_URL + '/wikilegis/api/v1/comment/'
+
     comments = api_get_objects(url)
 
     for comment in comments:
@@ -97,7 +105,14 @@ def get_comments():
 
 
 def get_votes():
-    url = EDEMOCRACIA_URL + '/wikilegis/api/v1/vote/'
+    if sys.argv[-1].isdigit():
+        today = datetime.today()
+        since = today - timedelta(days=int(sys.argv[-1]))
+        params = '?modified__gte=%s' % since.strftime('%Y-%m-%d')
+        url = EDEMOCRACIA_URL + '/wikilegis/api/v1/vote/' + params
+    else:
+        url = EDEMOCRACIA_URL + '/wikilegis/api/v1/vote/'
+
     votes = api_get_objects(url)
 
     for vote in votes:
@@ -131,8 +146,15 @@ def get_amendments():
         'supressamendment', 'modifieramendment', 'additiveamendment']
     url = EDEMOCRACIA_URL + '/wikilegis/api/v1/'
 
+    if sys.argv[-1].isdigit():
+        today = datetime.today()
+        since = today - timedelta(days=int(sys.argv[-1]))
+        params = '?modified__gte=%s' % since.strftime('%Y-%m-%d')
+    else:
+        params = ''
+
     for object_type in amendment_types:
-        amendments = api_get_objects(url + object_type)
+        amendments = api_get_objects(url + object_type + params)
 
         for amendment in amendments:
             profile = send_profile(amendment['author'])
