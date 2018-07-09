@@ -1,4 +1,5 @@
 from decouple import config
+import time
 import tweepy
 import requests
 
@@ -33,8 +34,13 @@ def get_tweets():
     profiles = babel_profiles()
 
     for profile in profiles:
-        tweets = api.user_timeline(
-            user_id=profile['id_in_channel'], include_rts=True, count=20)
+        try:
+            tweets = api.user_timeline(
+                user_id=profile['id_in_channel'], include_rts=True, count=200,
+                tweet_mode="extended")
+        except tweepy.RateLimitError:
+            time.sleep(60 * 15)
+            continue
 
         for tweet in tweets:
             try:
@@ -48,7 +54,7 @@ def get_tweets():
                 'profile_id': profile['id'],
                 'url': url,
                 'id_in_channel': tweet.id_str,
-                'content': tweet.text,
+                'content': tweet.full_text,
                 'timestamp': str(tweet.created_at),
                 'attrs': [
                     {'field': 'retweeted', 'value': str(tweet.retweeted)},
