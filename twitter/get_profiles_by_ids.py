@@ -47,6 +47,10 @@ def get_profiles(file):
                     {'field': 'entities', 'value': str(profile.entities)},
                     {'field': 'profile_image_url',
                      'value': profile.profile_image_url},
+                    {'field': 'verified',
+                     'value': profile.verified},
+                    {'field': 'listed_count',
+                     'value': profile.listed_count},
                 ]
             }
             if author:
