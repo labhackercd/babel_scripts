@@ -48,9 +48,9 @@ def get_profiles(file):
                     {'field': 'profile_image_url',
                      'value': profile.profile_image_url},
                     {'field': 'verified',
-                     'value': profile.verified},
+                     'value': str(profile.verified)},
                     {'field': 'listed_count',
-                     'value': profile.listed_count},
+                     'value': str(profile.listed_count)},
                 ]
             }
             if author:
@@ -58,11 +58,28 @@ def get_profiles(file):
             else:
                 print("Sem autor cadastrado.")
 
-            r = requests.post(BABEL_API_URL + 'profiles',
-                              json=profile_data,
-                              headers={
-                                  'Authorization': 'Token %s' % AUTH_TOKEN
-                              })
+            babel_profile = requests.get(
+                BABEL_API_URL + 'profiles',
+                params={
+                    'id_in_channel': profile.id_str,
+                    'channel__id': CHANNEL_ID
+                }
+            ).json()['results']
+
+            if babel_profile:
+                r = requests.put(
+                    BABEL_API_URL + 'profiles/%s' % babel_profile[0]['id'],
+                    json=profile_data,
+                    headers={
+                        'Authorization': 'Token %s' % AUTH_TOKEN
+                    }
+                )
+            else:
+                r = requests.post(BABEL_API_URL + 'profiles',
+                                  json=profile_data,
+                                  headers={
+                                      'Authorization': 'Token %s' % AUTH_TOKEN
+                                  })
 
             print("Profile: %s <status: %s>" % (profile.name, r.status_code))
 
